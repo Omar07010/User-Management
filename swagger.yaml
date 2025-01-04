@@ -1,0 +1,298 @@
+openapi: 3.0.0
+info:
+  title: User Management System
+  version: 1.0.0
+  description: API for managing users, including registration and authentication.
+  contact:
+    name: Support Team
+    email: support@example.com
+    url: https://example.com/support
+paths:
+  /user/v1/management/users/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                  description: Unique username for the user.
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                  description: Email address of the user.
+                password:
+                  type: string
+                  description: Password for the user account.
+                  minLength: 6
+                role:
+                  type: string
+                  enum: [admin, user]
+                  description: Role assigned to the user.
+                  example: user
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+                  userId:
+                    type: string
+                    example: 12345
+        '400':
+          description: Bad request (validation error)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User already exists
+
+  /user/v1/management/users/login:
+    post:
+      summary: Authenticate a user
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: your.jwt.token
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid username or password
+
+  /user/v1/management/users/forgot-password:
+    post:
+      summary: Request a password reset
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+      responses:
+        '200':
+          description: Password reset email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset email sent successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+
+  /user/v1/management/users/reset-password:
+    post:
+      summary: Reset the user's password
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: your-token
+                new_password:
+                  type: string
+                  minLength: 6
+                confirm_new_password:
+                  type: string
+                  minLength: 6
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset successfully
+        '400':
+          description: Invalid token or passwords don't match
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid token
+
+  /user/v1/management/users/{id}:
+    get:
+      summary: Get a user by ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: johndoe
+                  email:
+                    type: string
+                    example: johndoe@example.com
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+
+    put:
+      summary: Update a user by ID
+      operationId: updateUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  minLength: 6
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User updated successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+
+    delete:
+      summary: Delete a user by ID
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User deleted successfully
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
